@@ -15,4 +15,12 @@ StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
 StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
 
 [compat]
-julia = "1.7"
+julia = "^1.10.1"
+ComponentArrays = "^0.15.13" 
+DataFrames = "^1.6.1"
+Distributions = "^0.25.109"
+OrdinaryDiffEq = "^6.80.1"
+Parameters = "^0.12.3"
+PrecompileTools = "^1.2.1"
+StaticArrays = "^1.9.4"
+StatsBase = "^0.34.3"
