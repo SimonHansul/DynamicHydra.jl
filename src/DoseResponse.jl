@@ -25,14 +25,14 @@ end
 """
 Two-parameter log-logistic function transformed to increasing function 
 for application to PMoA maintenance costs.
-$(TYPEDSIGNATURES)
+
 """
 function LL2M(x::Float64, p::NTuple{2,Float64})
     1 - log(LL2(x, p))
 end
 
 """
-$(TYPEDSIGNATURES)
+
 """
 function LL2M(x::Vector{Float64}, p::NTuple{2,Float64})
     [LL2M(xi, p) for xi in x]
@@ -41,7 +41,7 @@ end
 
 """
 Inverse of the two-parameter log-logistic function.
-$(TYPEDSIGNATURES)
+
 """
 function LL2inv(y::Float64, p::NTuple{2,Float64})
     return p[1] * (((1 / y) - 1)^(1 / p[2]))
@@ -49,7 +49,7 @@ end
 
 """
 Inverse of the cumulative hazard two-parameter log-logistic function.
-$(TYPEDSIGNATURES)
+
 """
 function LL2hinv(y::Float64, p::NTuple{2,Float64})
     return p[1] * (((1 / exp(-y)) - 1)^(1 / p[2]))
@@ -57,7 +57,7 @@ end
 
 """
 Two-parameter Weibull function.
-$(TYPEDSIGNATURES)
+
 """
 function WB2(x::Float64, p::NTuple{2,Float64})
     return exp(-exp(p[2]*(log(x)-log(p[1]))))
@@ -76,7 +76,7 @@ Arguments:
     - `p3` = EC50_2
     - `p4` = beta_2
     - `p5` = breakpoint = relative response at which second phase starts
-$(TYPEDSIGNATURES)
+
 """
 function LLBP5(x::Float64, p::NTuple{5,Float64})
     y1 = p[5] / ( 1 +(x / p[1])^p[2]) # first-phase response
@@ -96,7 +96,7 @@ Arguments:
     - `p1` = EC50
     - `p2` = beta
     - `p3` = beta_2
-$(TYPEDSIGNATURES)
+
 """
 function LLAS3(x::Float64, p::NTuple{3,Float64})
     return 1 / ((1 + ((x / p[1])^p[2]))^p[3])
@@ -166,7 +166,7 @@ function CRS5US(x::Float64, p::NTuple{5,Float64})
 end
 
 """
-$(TYPEDSIGNATURES)
+
 """
 function CRS5US(x::Vector{Float64}, p::NTuple{5,Float64})
     y = @. 1 + (p[3]-(((p[3]+p[5]*exp(-1/(x^p[1])))/(1+exp(p[2]*(log(x)-log(p[4])))))))
@@ -175,12 +175,12 @@ end
 
 """
 Increasing NEC model.
-$(TYPEDSIGNATURES)
+
 """
 NEC2pos(x::Float64, p::NTuple{2,Float64}) = (p[2] * max(0, x - p[1]))
 
 """
 Decreasing NEC model.
-$(TYPEDSIGNATURES)
+
 """
 NEC2neg(x::Float64, p::NTuple{2,Float64}) = 1 / (1 + (p[2] * max(0, x - p[1])))
