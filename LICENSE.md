@@ -1,4 +1,4 @@
-The DynamicHydra.jl package is licensed under the MIT "Expat" License:
+The Hydra.jl package is licensed under the MIT "Expat" License:
 
     Copyright (c) 2024: Simon Hansul.
 

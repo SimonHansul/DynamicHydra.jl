@@ -10,19 +10,20 @@ if (abspath(PROGRAM_FILE) == @__FILE__) | occursin("terminalserver", abspath(PRO
     default(leg = false, lw = 1.5)
 
     using Revise
-    using DynamicHydra
+    using Hydra
 end
 
 TAG = replace(splitpath(@__FILE__)[end], ".jl" =>"")
 
 norm(x) = x ./ sum(x)
+
 tests = glob("test/*.jl") |> 
 x -> [splitpath(xi)[end] for xi in x] |>
 x -> filter(f -> f != "runtests.jl", x)
 
 include(tests[2])
 
-y = DynamicHydra.simulator(DEBParamCollection())
+y = Hydra.simulator(DEBParamCollection())
 
 
 for test in tests

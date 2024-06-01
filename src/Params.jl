@@ -70,7 +70,7 @@ end
 
 """
 `SpeciesParams` contain population means of DEB and TKTD parameters. Default values are for Daphnia magna and Azoxystrobin in μg C. <br>
-DynamicHydra.jl uses a hierarchical modelling approach where the `SpeciesParams` are  parameters which are common across all agents of a species, 
+Hydra.jl uses a hierarchical modelling approach where the `SpeciesParams` are  parameters which are common across all agents of a species, 
 and `AgentParams` contain parameters which are specific for a species. <br>
 Variability is given by the zoom factor `Z::Distribution`, which is always applied to the surface-area specific ingestion rates 
 and can optionally propagate to parameters indicated in `propagate_zoom::NamedTuple`. <br>

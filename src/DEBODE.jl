@@ -39,7 +39,7 @@ end
         kwargs...
         )::DataFrame
 
-Run the DynamicHydra model from a `DEBParamCollection` instance. <br>
+Run the Hydra model from a `DEBParamCollection` instance. <br>
 """
 function simulator(
     p::DEBParamCollection; 

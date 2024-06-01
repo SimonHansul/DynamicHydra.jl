@@ -1,5 +1,5 @@
 using Revise
-using DynamicHydra
+using Hydra
 default(palette = palette([:lightblue, :purple], 5), lw = 2)
 
 p = DEBParamCollection()

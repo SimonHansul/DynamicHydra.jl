@@ -2,22 +2,6 @@
 # Testing the basic functionality based on default parameters
 =#
 
-begin
-    using Pkg; Pkg.activate("test")
-
-    using Plots, StatsPlots, Plots.Measures
-    default(leg = false)
-    using Distributions
-    using DataFrames
-    using Test
-    using OrdinaryDiffEq
-    using Chain
-
-    using SHUtils
-    using Revise
-    @time using DynamicHydra    
-end
-
 #=
 Testing the default parameters
 =#
@@ -25,14 +9,14 @@ Testing the default parameters
     p = DEBParamCollection()
     p.glb.t_max = 56.
     p.spc.Z = Dirac(1.)
-    yhat = DynamicHydra.simulator(p)
+    yhat = Hydra.simulator(p)
     @df yhat plot(
         plot(:t, :S),
         plot(:t, :H)
      ) |> display
 
     @test isapprox(maximum(yhat.H), p.spc.H_p, rtol = 1e-2) # test for maximum maturity
-    @test isapprox(maximum(yhat.S), DynamicHydra.calc_S_max(p.spc), rtol = 0.1)
+    @test isapprox(maximum(yhat.S), Hydra.calc_S_max(p.spc), rtol = 0.1)
 end;
 
 #=
@@ -42,7 +26,7 @@ Basic test of @replicates macro
 @testset begin
     p = DEBParamCollection()
     p.spc.Z = Truncated(Normal(1., 0.1), 0, Inf)
-    yhat = @replicates DynamicHydra.simulator(p) 10
+    yhat = @replicates Hydra.simulator(p) 10
 
     plt = @df yhat plot(
         plot(:t, :S, group = :replicate, color = 1),

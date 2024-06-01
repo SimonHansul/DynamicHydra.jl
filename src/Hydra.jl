@@ -1,4 +1,4 @@
-module DynamicHydra
+module Hydra
 
     using ComponentArrays, StaticArrays
     using Parameters, OrdinaryDiffEq
@@ -38,4 +38,4 @@ module DynamicHydra
     include("ImpliedTraits.jl") # calculation of traits from parameters
     include("Macros.jl") # quality of life-stuff
 
-end # module DynamicHydra
+end # module Hydra

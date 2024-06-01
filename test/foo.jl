@@ -10,8 +10,8 @@ eval(genstruct(:MyParams2, :gamma, 0.5))
 MyParams2().gamma
 
 
-using DynamicHydra
-p1 = DynamicHydraParams()
+using Hydra
+p1 = HydraParams()
 p2 = 
 
 p = @with_kw (f = x -> x^3, y = 3, z = "foo")

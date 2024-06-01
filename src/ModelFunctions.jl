@@ -193,7 +193,7 @@ Values of `y_G != 1` are included in the calculation of `S_0`, so that a slowing
     t::Real
     )::Nothing
 
-    #du.agn.S_0 = p.eta_AS * u.agn.y_G * (DynamicHydra.sig(u.X_emb, 0., p.agn.Idot_max_rel, p.agn.Idot_max_rel_emb; beta = 1e20) * Complex(u.agn.S ^(2/3)).re - p.spc.k_M * u.S_0)
+    #du.agn.S_0 = p.eta_AS * u.agn.y_G * (Hydra.sig(u.X_emb, 0., p.agn.Idot_max_rel, p.agn.Idot_max_rel_emb; beta = 1e20) * Complex(u.agn.S ^(2/3)).re - p.spc.k_M * u.S_0)
 
     u.agn.S_0 = sig(
         u.S,
@@ -449,10 +449,10 @@ function Hbj(H::Float64, X_emb::Float64, H_b::Float64, H_j::Float64, p_b::Float6
     w_j = 1 - w_b # weight for p_j
     p_bj = mean([p_b, p_j], Weights([w_b, w_j])) # p_bj, i.e. value between birth and maturity
     
-    p = DynamicHydra.sig( # post-metamorphosis: value stays constant at p_j
+    p = Hydra.sig( # post-metamorphosis: value stays constant at p_j
         H,
         H_j,
-        DynamicHydra.sig( # embryonic: value stays constant at p_b
+        Hydra.sig( # embryonic: value stays constant at p_b
             X_emb, 
             0., 
             p_bj, 
