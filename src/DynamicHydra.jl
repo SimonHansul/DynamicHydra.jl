@@ -1,4 +1,4 @@
-module Hydra
+module DynamicHydra
 
     using ComponentArrays, StaticArrays
     using Parameters, OrdinaryDiffEq
@@ -6,7 +6,11 @@ module Hydra
     using DataFrames
     using PrecompileTools
 
+    # establishing type hierarchy
+    abstract type AbstractParams end
+    abstract type AbstractParamCollection end # an AbstractParamCollection contain a defined set of multiple AbstractParams instances
     abstract type AbstractSpeciesParams <: AbstractParams end
+    abstract type AbstractGlobalParams <: AbstractParams end
     abstract type AbstractABM end
     abstract type AbstractAgent end
 
@@ -34,4 +38,4 @@ module Hydra
     include("ImpliedTraits.jl") # calculation of traits from parameters
     include("Macros.jl") # quality of life-stuff
 
-end # module Hydra
+end # module DynamicHydra
