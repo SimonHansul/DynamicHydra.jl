@@ -172,38 +172,6 @@ Somatic growth, including application of shrinking equation.
     return nothing
 end
 
-"""
-    S_0dot!(
-        du::ComponentArray,
-        u::ComponentArray,
-        p::AbstractParamCollection,
-        t::Real
-        )::Nothing
-
-Reference structure `S_0`, which is used as a measure of energetic state.
-
-This is the amount of structure an individual of the given age has under ideal conditions, 
-i.e. `f = 1` and `y_z = 1`, with the exception of `y_G`. 
-Values of `y_G != 1` are included in the calculation of `S_0`, so that a slowing down of growth 
-"""
-@inline function S_0dot!(
-    du::ComponentArray,
-    u::ComponentArray,
-    p::AbstractParamCollection,
-    t::Real
-    )::Nothing
-
-    #du.agn.S_0 = p.eta_AS * u.agn.y_G * (DynamicHydra.sig(u.X_emb, 0., p.agn.Idot_max_rel, p.agn.Idot_max_rel_emb; beta = 1e20) * Complex(u.agn.S ^(2/3)).re - p.spc.k_M * u.S_0)
-
-    u.agn.S_0 = sig(
-        u.S,
-        u.S_0,
-        u.S_0,
-        u.S;
-    )
-
-    return nothing
-end
 
 """
 Maturation flux. 
@@ -298,11 +266,11 @@ function Qdot!(
     # dissipation fluxes for the individual processes
     let Qdot_A, Qdot_S, Qdot_C, Qdot_R
         
-        Qdot_A = du.I * (1 - p.spc.eta_IA)
-        Qdot_S = du.S >= 0 ? du.S * (1 - p.spc.eta_AS) / p.spc.eta_AS : du.S * (p.spc.eta_SA - 1)
-        Qdot_R = du.R * (1 - p.spc.eta_AR) / p.spc.eta_AR
+        Qdot_A = du.agn.I * (1 - p.spc.eta_IA) # dissipation through assimialtion
+        Qdot_S = du.agn.S >= 0 ? du.agn.S * (1 - p.spc.eta_AS) / p.spc.eta_AS : du.S * (p.spc.eta_SA - 1) # dissipation through growth
+        Qdot_R = du.agn.R * (1 - p.spc.eta_AR) / p.spc.eta_AR # dissipation through reproduction
         
-        du.Q =  Qdot_A + Qdot_S + Qdot_C + Qdot_R + du.M + du.J + du.H
+        du.agn.Q =  Qdot_A + Qdot_S + Qdot_R + du.agn.M + du.agn.J + du.agn.H # total dissipation
     end
 
     return nothing
@@ -341,7 +309,7 @@ function X_pdot_chemstat!(
     t::Real
     )::Nothing 
 
-    du.X_p = p.glb.Xdot_in - p.glb.k_V * u.X_p
+    du.glb.X_p = p.glb.Xdot_in - p.glb.k_V * u.glb.X_p
 
     return nothing
 end
@@ -356,7 +324,7 @@ function C_Wdot_const!(
     t::Real
     )::Nothing
 
-    du.C_W = zeros(length(u.C_W))
+    du.glb.C_W = zeros(length(u.glb.C_W))
 
     return nothing
 end
@@ -425,7 +393,7 @@ end
 
 
 """
-Hazard rate under starvation
+Hazard rate under starvation.
 """
 @inline function h_S!(
     du::ComponentVector,
@@ -463,94 +431,3 @@ function Hbj(H::Float64, X_emb::Float64, H_b::Float64, H_j::Float64, p_b::Float6
     return p
 end
 
-
-"""
-    reproduce_opportunistic!(agent::AbstractAgent, abm::AbstractABM)::Nothing
-
-Reproduction according to an opportunistic reproduction strategy. 
-Offspring is created whenever there is enough energy in the reproduction buffer.
-"""
-function reproduce_opportunistic!(agent::AbstractAgent, abm::AbstractABM)::Nothing
-    
-    let num_offspring = trunc(agent.u.agn.R / agent.p.agn.X_emb_int) # calculate the number of offspring produced
-        for _ in 1:num_offspring # for the given number of offspring agents
-            offspring = abm.p.glb.AgentType(abm) # initialize a new agent
-            offspring.u.agn.cohort = agent.u.agn.cohort + 1 # the offspring agent is part of a new cohort
-            push!(abm.agents, offspring) # add offspring to agents vector
-            agent.u.agn.R -= agent.p.agn.X_emb_int # remove energy from reproduction buffer
-        end
-        agent.u.agn.cum_repro += num_offspring
-    end
-
-    return nothing
-end
-
-"""
-    ingestion!(agent::AbstractAgent, abm::AbstractABMagent)::Nothing
-
-Update resource abundance in model `abm` based on ingestion flux of `agent`.
-"""
-function ingestion!(agent::AbstractAgent, abm::AbstractABM)::Nothing
-    
-    abm.u.X_p = max(0, abm.u.X_p - agent.du.agn.I_p * abm.dt)
-    
-    return nothing
-end
-
-"""
-    stochastic_death!(agent::AbstractAgent, abm::AbstractABM, h_x::Float64)::Nothing
-
-Apply stochastic death model to agent, with respect to hazard rate `h_x`. 
-
-Records the cause of death encoded in a number, given by keyword argument `causeofdeath`.
-"""
-function stochastic_death!(agent::AbstractAgent, abm::AbstractABM, h_x::Float64; causeofdeath = 0.)::Nothing
-    if rand() >= exp(-h_x / abm.dt)
-        agent.u.agn.dead = 1.
-        agent.u.agn.causeofdeath = causeofdeath
-    end
-
-    return nothing
-end
-
-function die!(agent::AbstractAgent, abm::AbstractABM)::Nothing
-    stochastic_death!(agent, abm, agent.u.agn.h_S; causeofdeath = 1.) # starvation mortality from loss of structure
-    return nothing
-end
-
-function N_tot!(abm::AbstractABM)::Nothing
-    abm.u.N_tot = length(abm.agents)
-    return nothing
-end
-
-"""
-    DEBODE!(du, u, p, t)
-Definition of base model as a system of ordinary differential equations. 
-This model definition is suitable for simulating the life-history of a single organism in conjecture with DifferentialEquations.jl.
-"""
-function DEBODE!(du, u, p, t)::Nothing
-
-    #### physiological responses
-    y_z!(du, u, p, t) # response to chemical stressors
-    h_S!(du, u, p, t) # starvation mortality
-
-    #### auxiliary state variables (record cumulative values)
-    Idot!(du, u, p, t)
-    Adot!(du, u, p, t) 
-    Mdot!(du, u, p, t) 
-    Jdot!(du, u, p, t)
-    Qdot!(du, u, p, t)
-
-    #### major state variables
-    Sdot!(du, u, p, t) # structure
-    S_0dot!(du, u, p, t) # reference structure
-    Hdot!(du, u, p, t) # maturity 
-    H_bdot!(du, u, p, t) # estimate of maturity at birth
-    Rdot!(du, u, p, t) # reproduction buffer
-    X_pdot!(du, u, p, t) # resource abundance
-    X_embdot!(du, u, p, t) # vitellus
-    Ddot!(du, u, p, t) # damage
-    C_Wdot!(du, u, p, t) # external stressor concentration 
-
-    return nothing
-end

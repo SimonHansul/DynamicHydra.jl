@@ -12,27 +12,29 @@ function LL2(x::Float64, p::NTuple{2,Float64})
 end
 
 """
-Cumulative hazard function of the log-logistic distribution. Mainly used for application in GUTS.
+Cumulative hazard function of the log-logistic distribution. Useful for application in GUTS.
 """
 function LL2h(x::Float64, p::NTuple{2,Float64})
     -log(LL2(x, p))
 end
 
+"""
+Vectorized LL2h-function.
+"""
 function LL2h(x::Vector{Float64}, p::NTuple{2,Float64})
     [LL2h(xi, p) for xi in x]
 end
 
 """
-Two-parameter log-logistic function transformed to increasing function 
-for application to PMoA maintenance costs.
-
+Shifted cumulative hazard function of the two-parameter log-logistic function  
+for application in PMoA maintenance costs (or any increasing response with intersect at 1).
 """
 function LL2M(x::Float64, p::NTuple{2,Float64})
     1 - log(LL2(x, p))
 end
 
 """
-
+Vectorized LL2M function.
 """
 function LL2M(x::Vector{Float64}, p::NTuple{2,Float64})
     [LL2M(xi, p) for xi in x]
@@ -40,8 +42,7 @@ end
 
 
 """
-Inverse of the two-parameter log-logistic function.
-
+Inverse of the two-parameter log-logistic function. Mainly used to calculate EC50s.
 """
 function LL2inv(y::Float64, p::NTuple{2,Float64})
     return p[1] * (((1 / y) - 1)^(1 / p[2]))
@@ -49,7 +50,6 @@ end
 
 """
 Inverse of the cumulative hazard two-parameter log-logistic function.
-
 """
 function LL2hinv(y::Float64, p::NTuple{2,Float64})
     return p[1] * (((1 / exp(-y)) - 1)^(1 / p[2]))
@@ -57,12 +57,14 @@ end
 
 """
 Two-parameter Weibull function.
-
 """
 function WB2(x::Float64, p::NTuple{2,Float64})
     return exp(-exp(p[2]*(log(x)-log(p[1]))))
 end
 
+"""
+Vectorized WB2.
+"""
 function WB2(x::Vector{Float64}, p::NTuple{2,Float64})
     return [WB2(xi, p) for xi in x]
 end
@@ -85,6 +87,9 @@ function LLBP5(x::Float64, p::NTuple{5,Float64})
     return y
 end
 
+"""
+Vectorized LLBP5.
+"""
 function LLBP5(x::Vector{Float64}, p::NTuple{5,Float64})
     return [LLBP5(xi, p) for xi in x]
 end
@@ -102,10 +107,16 @@ function LLAS3(x::Float64, p::NTuple{3,Float64})
     return 1 / ((1 + ((x / p[1])^p[2]))^p[3])
 end
 
+"""
+Vectorized LLAS3 function.
+"""
 function LLAS3(x::Vector{Float64}, p::NTuple{3,Float64})
     return [LLAS3(xi, p) for xi in x]
 end
 
+"""
+Three-parameter log-logistic function with maximum `p[3]`.
+"""
 function LL3(x::Float64, p::NTuple{3,Float64})
     return p[3] / (1 + (x / p[1])^p[2])
 end
@@ -165,13 +176,6 @@ function CRS5US(x::Float64, p::NTuple{5,Float64})
     return max.(0, y)
 end
 
-"""
-
-"""
-function CRS5US(x::Vector{Float64}, p::NTuple{5,Float64})
-    y = @. 1 + (p[3]-(((p[3]+p[5]*exp(-1/(x^p[1])))/(1+exp(p[2]*(log(x)-log(p[4])))))))
-    return max.(0, y)
-end
 
 """
 Increasing NEC model.
@@ -181,6 +185,5 @@ NEC2pos(x::Float64, p::NTuple{2,Float64}) = (p[2] * max(0, x - p[1]))
 
 """
 Decreasing NEC model.
-
 """
 NEC2neg(x::Float64, p::NTuple{2,Float64}) = 1 / (1 + (p[2] * max(0, x - p[1])))

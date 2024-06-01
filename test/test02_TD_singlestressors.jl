@@ -10,7 +10,7 @@ if occursin("terminal", abspath(PROGRAM_FILE))
     using OrdinaryDiffEq
 
     using Revise
-    using DynamicHydra
+    using Hydra
 end
 TAG = replace(splitpath(@__FILE__)[end], ".jl" =>"")
 
@@ -29,10 +29,8 @@ p.spc.b_M = [2.]
 #=
 Simulate single stressors with different PMoAs
 =#
-# FIXME: negative damage...
-# does not seem related to S at all
 #
-using DynamicHydra
+using Hydra
 begin   
     out = DataFrame()
     pmoas = ["G", "M", "A", "R"]
@@ -64,7 +62,7 @@ begin
             append!(out, out_zj)
         end
     end
-    out = DynamicHydra.relative_response(out, [:S, :R], :C_W; groupby_vars = [:t, :pmoa])
+    out = Hydra.relative_response(out, [:S, :R], :C_W; groupby_vars = [:t, :pmoa])
 
     plt = plot(
         layout = (2,4), title = hcat(pmoas...), 

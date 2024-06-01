@@ -19,3 +19,11 @@ out = simulator(params)
 ```
 
 The output is a DataFrame containing the model trajectories, with major state variables time `t`, structural mass `S`, maturity `H` and reproduction buffer `R`.
+
+
+## Relation to similar packages
+
+In general, the design philosophy behind `Hydra` is to facilitate modular modelling approaches. 
+It should be possible to combine self-sufficient models into new models without touching (or copy-pasting) the original model code. <br>
+
+[DynamicEnergyBudgets.jl](https://github.com/BiophysicalEcology/DynamicEnergyBudgets.jl) provides facilities for DEB modelling in Julia. <br>

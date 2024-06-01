@@ -5,6 +5,8 @@ module Hydra
     using Distributions, StatsBase, Random
     using DataFrames
     using PrecompileTools
+    using RecipesBase
+
 
     # establishing type hierarchy
     abstract type AbstractParams end
@@ -16,7 +18,7 @@ module Hydra
     export LL2, LL2h, LL2M, LL2inv, LL2hinv, WB2, WB2, LLBP5, LLAS3, LL3, CRS6, CRS4, CRS4U, CRS6U, CRS5US, NEC2pos, NEC2neg
     
     include("Params.jl")
-    export AbstractParams, AbstractParamCollection, childstruct!, AbstractABM, AbstractSpeciesParams, ABM, DEBAgent, GlobalParams, GlobalBaseStatevars, SpeciesParams, DEBParamCollection, AgentParams
+    export AbstractParams, AbstractParamCollection, childstruct!, AbstractABM, AbstractSpeciesParams, ABM, GlobalParams, GlobalBaseStatevars, SpeciesParams, DEBParamCollection, AgentParams
 
     include("StateVars.jl") # initializeation of state variables
     export init_substates_agent, init_substates_global, initialize_statevars, initialize_statevars!, initialize_agents!
@@ -27,10 +29,13 @@ module Hydra
     include("ModelFunctions.jl") # core model functions (derivatives and rules)
     export sig, clipneg
 
-    include("DEBODE.jl") # ODE-based simulations
+    include("HydraODE.jl") # ODE-based simulations
     export abstractsimulator, returntypes, simulator, @replicates
 
     include("ImpliedTraits.jl") # calculation of traits from parameters
     include("Macros.jl") # quality of life-stuff
+
+    include("Recipes.jl")
+    export lineplot, groupedlineplot, rugplot, gridxlabel, gridylabel
 
 end # module Hydra
