@@ -1,8 +1,5 @@
 module Hydra
 
-    using Reexport
-    @reexport using DEBParamStructs
-    @reexport using DoseResponse
     using ComponentArrays, StaticArrays
     using Parameters, OrdinaryDiffEq
     using Distributions, StatsBase, Random
@@ -13,26 +10,28 @@ module Hydra
     abstract type AbstractABM end
     abstract type AbstractAgent end
 
-    include("Solvers.jl")
-
+    include("DoseResponse.jl") # collection of useful dose-response functions
+    export LL2, LL2h, LL2M, LL2inv, LL2hinv, WB2, WB2, LLBP5, LLAS3, LL3, CRS6, CRS4, CRS4U, CRS6U, CRS5US, NEC2pos, NEC2neg
+    
     include("Params.jl")
-    export childstruct!, AbstractABM, AbstractSpeciesParams, ABM, DEBAgent, GlobalParams, GlobalBaseStatevars, SpeciesParams, DEBParamCollection, AgentParams
+    export AbstractParams, AbstractParamCollection, childstruct!, AbstractABM, AbstractSpeciesParams, ABM, DEBAgent, GlobalParams, GlobalBaseStatevars, SpeciesParams, DEBParamCollection, AgentParams
+    
+    include("Solvers.jl") # solvers used within DEBABM
+    include("DEBABM.jl") # agent-based simulations
 
-    include("DEBABM.jl")
-
-    include("StateVars.jl")
+    include("StateVars.jl") # initializeation of state variables
     export init_substates_agent, init_substates_global, initialize_statevars, initialize_statevars!, initialize_agents!
 
-    include("IO.jl")
+    include("IO.jl") # input/output handling
     export setproperty!, isolate_pmoas!, set_equal!, relative_response
 
-    include("ModelFunctions.jl")
+    include("ModelFunctions.jl") # core model functions (derivatives and rules)
     export sig, clipneg
 
-    include("DEBODE.jl")
+    include("DEBODE.jl") # ODE-based simulations
     export abstractsimulator, returntypes, simulator, @replicates
 
-    include("ImpliedTraits.jl")
-    include("Macros.jl")
+    include("ImpliedTraits.jl") # calculation of traits from parameters
+    include("Macros.jl") # quality of life-stuff
 
 end # module Hydra
