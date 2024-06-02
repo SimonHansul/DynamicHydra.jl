@@ -23,7 +23,7 @@ x -> filter(f -> f != "runtests.jl", x)
 
 include(tests[2])
 
-y = Hydra.simulator(DEBParamCollection())
+y = Hydra.simulator(ODEParamCollection())
 
 
 for test in tests

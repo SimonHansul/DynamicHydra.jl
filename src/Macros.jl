@@ -19,7 +19,7 @@ Perform replicated runs of `simcall`, where `simcall` is a call to a simulator f
 Example:
 
     spc = SpeciesParams(Z = Truncated(Normal(1, 0.1), 0, Inf)) # initialize default parameters with variable zoom factor
-    yhat = @replicates Hydra.simulator(DEBParamCollection(spc = spc))) 10 # execute replicated runs to simulator
+    yhat = @replicates Hydra.simulator(ODEParamCollection(spc = spc))) 10 # execute replicated runs to simulator
 
 In this case, `yhat` will contain the output of 10 replicated simulations. For each replicate, the zoom factor is sampled from a truncated Normal distribution. 
 `yhat` contains an additional column `replicate`. 

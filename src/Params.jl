@@ -52,9 +52,23 @@ end
 =#
 
 """
-`GlobalParams` contain the global parameters (simulated timespan `t_max`, nutrient influx rate `Xdot_in`, etc.)
+`GlobalODEParams` contain the global parameters (simulated timespan `t_max`, nutrient influx rate `Xdot_in`, etc.)
 """
-@with_kw mutable struct GlobalParams <: AbstractParams
+@with_kw mutable struct GlobalODEParams <: AbstractParams
+    N0::Int64 = 1 #  initial number of individuals [#]
+    t_max::Float64 = 21. # maximum simulation time [t]
+    Xdot_in::Float64 = 1200. # resource influx rate [m/t]
+    k_V::Float64 = 0.1 # chemostatic dilution rate [t^-1]
+    V_patch::Float64 = 0.05 # volume of a patch (or the entire similated environment) [V]
+    C_W::Vector{Float64} = [0.] # external chemical concentrations [m/t], [n/t], ...
+    saveat::Float64 = 1. # when to save output [t]
+    odefuncs::Vector{Function} = Function[C_Wdot_const!, X_pdot_chemstat!] # ODE-based global step functions
+end
+
+"""
+`GlobalODEParams` contain the global parameters (simulated timespan `t_max`, nutrient influx rate `Xdot_in`, etc.)
+"""
+@with_kw mutable struct GlobalABMParams <: AbstractParams
     N0::Int64 = 1 #  initial number of individuals [#]
     t_max::Float64 = 21. # maximum simulation time [t]
     Xdot_in::Float64 = 1200. # resource influx rate [m/t]
@@ -67,6 +81,8 @@ end
     odefuncs::Vector{Function} = Function[C_Wdot_const!, X_pdot_chemstat!] # ODE-based global step functions
     rulefuncs::Vector{Function} = Function[N_tot!] # rule-based global step functions
 end
+
+
 
 """
 `SpeciesParams` contain population means of DEB and TKTD parameters. Default values are for Daphnia magna and Azoxystrobin in μg C. <br>
@@ -132,7 +148,7 @@ and can optionally propagate to parameters indicated in `propagate_zoom::NamedTu
     d_R::Union{Nothing,Vector{Function}} = nothing
     d_h::Union{Nothing,Vector{Function}} = nothing
 
-    odefuncs::Vector{Function} = Function[
+    odefuncs::Vector{Function} = Function[ # ode-based model functions
             y_z!, 
             h_S!,
             Idot!, 
@@ -146,10 +162,12 @@ and can optionally propagate to parameters indicated in `propagate_zoom::NamedTu
             Ddot!,
             age!
         ]
-    rulefuncs::Vector{Function} = Function[
+    rulefuncs::Vector{Function} = Function[ # rule-based model functions
         reproduce_opportunistic!,
         die!
     ]
+
+    adata::Vector{Symbol} = [:S, :R, :H] # statevars to record
 end
 
 """
@@ -198,11 +216,18 @@ function agent_variability!(agn::AGN, spc::SPC) where {AGN <: AbstractParams, SP
 end
 
 """
-A `DEBParamCollection` contains global parameters `glb` and spc parameters `spc` (including TKTD-parameters). <br>
-Initialize the default parameter collection with `DEBParamCollection()`.
+A `ODEParamCollection` contains global parameters `glb` and spc parameters `spc`. <br>
+Initialize the default parameter collection with `ODEParamCollection()`.
 """
-@with_kw mutable struct DEBParamCollection <: AbstractParamCollection
-    glb::AbstractParams = GlobalParams()
+@with_kw mutable struct ODEParamCollection <: AbstractParamCollection
+    glb::AbstractParams = GlobalODEParams()
+    spc::AbstractParams = SpeciesParams()
+    agn::Union{Nothing,AbstractParams} = nothing
+end
+
+
+@with_kw mutable struct ABMParamCollection <: AbstractParamCollection
+    glb::AbstractParams = GlobalABMParams()
     spc::AbstractParams = SpeciesParams()
     agn::Union{Nothing,AbstractParams} = nothing
 end

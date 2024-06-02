@@ -10,7 +10,7 @@ module Hydra
     abstract type AbstractParams end
     abstract type AbstractParamCollection end # an AbstractParamCollection contain a defined set of multiple AbstractParams instances
     abstract type AbstractSpeciesParams <: AbstractParams end
-    abstract type AbstractGlobalParams <: AbstractParams end
+    abstract type AbstractGlobalODEParams <: AbstractParams end
     abstract type AbstractABM end
     abstract type AbstractAgent end
 
@@ -18,7 +18,7 @@ module Hydra
     export LL2, LL2h, LL2M, LL2inv, LL2hinv, WB2, WB2, LLBP5, LLAS3, LL3, CRS6, CRS4, CRS4U, CRS6U, CRS5US, NEC2pos, NEC2neg
     
     include("Params.jl")
-    export AbstractParams, AbstractParamCollection, childstruct!, AbstractABM, AbstractSpeciesParams, ABM, DEBAgent, GlobalParams, GlobalBaseStatevars, SpeciesParams, DEBParamCollection, AgentParams
+    export AbstractParams, AbstractParamCollection, childstruct!, AbstractABM, AbstractSpeciesParams, ABM, DEBAgent, GlobalODEParams, GlobalBaseStatevars, SpeciesParams, ODEParamCollection, AgentParams
     
     include("Solvers.jl") # solvers used within DEBABM
     include("DEBABM.jl") # agent-based simulations

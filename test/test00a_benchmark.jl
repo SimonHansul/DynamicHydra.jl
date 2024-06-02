@@ -6,5 +6,5 @@ using Test
 using Revise
 using Hydra
 
-@benchmark out = simulator(DEBParamCollection()) 
+@benchmark out = simulator(ODEParamCollection()) 
 @test true # this just has to run without an error

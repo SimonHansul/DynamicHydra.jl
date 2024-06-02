@@ -32,17 +32,17 @@ end
 
 """
     simulator(
-        p::Ref{DEBParamCollection}; 
+        p::Ref{ODEParamCollection}; 
         alg = Tsit5(),
         saveat = 1, 
         reltol = 1e-6,
         kwargs...
         )::DataFrame
 
-Run the Hydra model from a `DEBParamCollection` instance. <br>
+Run the Hydra model from a `ODEParamCollection` instance. <br>
 """
 function simulator(
-    p::DEBParamCollection; 
+    p::ODEParamCollection; 
     model = DEBODE!,
     AgentParamType::DataType = AgentParams,
     kwargs...

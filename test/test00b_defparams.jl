@@ -6,7 +6,7 @@
 Testing the default parameters
 =#
 @testset begin 
-    p = DEBParamCollection()
+    p = ODEParamCollection()
     p.glb.t_max = 56.
     p.spc.Z = Dirac(1.)
     yhat = Hydra.simulator(p)
@@ -24,7 +24,7 @@ Basic test of @replicates macro
 =#
 
 @testset begin
-    p = DEBParamCollection()
+    p = ODEParamCollection()
     p.spc.Z = Truncated(Normal(1., 0.1), 0, Inf)
     yhat = @replicates Hydra.simulator(p) 10
 

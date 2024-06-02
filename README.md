@@ -14,7 +14,7 @@ The following is the minimal code to run a model:
 ```
 using Hydra
 
-params = DEBParamCollection()
+params = ODEParamCollection()
 out = simulator(params)
 ```
 
