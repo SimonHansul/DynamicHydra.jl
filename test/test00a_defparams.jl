@@ -1,8 +1,11 @@
 #=
+<<<<<<< HEAD:test/test00b_defparams.jl
 # Testing the basic functionality based on default parameters
 =#
 
 #=
+=======
+>>>>>>> main:test/test00a_defparams.jl
 Testing the default parameters
 =#
 @testset begin 
@@ -15,8 +18,13 @@ Testing the default parameters
         plot(:t, :H)
      ) |> display
 
+<<<<<<< HEAD:test/test00b_defparams.jl
     @test isapprox(maximum(yhat.H), p.spc.H_p, rtol = 1e-2) # test for maximum maturity
     @test isapprox(maximum(yhat.S), Hydra.calc_S_max(p.spc), rtol = 0.1)
+=======
+    @test isapprox(maximum(yhat.H), p.spc.H_p, rtol = 1e-2) # check for maximum maturity
+    @test isapprox(maximum(yhat.S), Hydra.calc_S_max(p.spc), rtol = 0.1) # check for 
+>>>>>>> main:test/test00a_defparams.jl
 end;
 
 #=

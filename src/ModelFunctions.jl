@@ -324,7 +324,7 @@ function Qdot!(
         Qdot_S = du.S >= 0 ? du.S * (1 - p_spc.eta_AS) / p_spc.eta_AS : du.S * (p_spc.eta_SA - 1)
         Qdot_R = du.R * (1 - p_spc.eta_AR) / p_spc.eta_AR
         
-        du.Q =  Qdot_A + Qdot_S + Qdot_C + Qdot_R + du.M + du.J + du.H
+        du.agn.Q =  Qdot_A + Qdot_S + Qdot_R + du.agn.M + du.agn.J + du.agn.H # total dissipation
     end
 
     return nothing
@@ -392,7 +392,7 @@ function C_Wdot_const!(
     t::Real
     )::Nothing
 
-    du.C_W = zeros(length(u.C_W))
+    du.glb.C_W = zeros(length(u.glb.C_W))
 
     return nothing
 end
@@ -473,7 +473,7 @@ end
 
 
 """
-Hazard rate under starvation
+Hazard rate under starvation.
 """
 @inline function h_S!(
     du_glb::ComponentArray,
