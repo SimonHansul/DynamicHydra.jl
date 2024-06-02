@@ -80,6 +80,7 @@ end
     saveat::Float64 = 1. # when to save output [t]
     odefuncs::Vector{Function} = Function[C_Wdot_const!, X_pdot_chemstat!] # ODE-based global step functions
     rulefuncs::Vector{Function} = Function[N_tot!] # rule-based global step functions
+    mdata_t::Vector{Symbol}  = [:X_p, :C_W] # global statevars to record
 end
 
 
@@ -167,7 +168,11 @@ and can optionally propagate to parameters indicated in `propagate_zoom::NamedTu
         die!
     ]
 
-    adata::Vector{Symbol} = [:S, :R, :H] # statevars to record
+    adata::Vector{Expr} = [ # agent fields to record
+        :(u.agn.S), # can be :(u.agn.something) or :(du.agn.something)
+        :(u.agn.R), 
+        :(u.agn.H)
+        ] 
 end
 
 """
