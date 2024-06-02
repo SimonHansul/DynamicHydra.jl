@@ -47,7 +47,7 @@ Juveniles and adults (X_emb > 0) feed on the external resource X_pcmn.
     )::Nothing
 
     u.agn.f_X = functional_response(du, u, p, t)
-    
+
     du.agn.I_emb = sig( # uptake from vitellus
         u.agn.X_emb, # uptake from vitellus depends on mass of vitellus
         0., # the switch occurs when vitellus is used up 
