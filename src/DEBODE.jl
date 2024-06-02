@@ -43,7 +43,7 @@ Run the Hydra model from a `ODEParamCollection` instance. <br>
 """
 function simulator(
     p::ODEParamCollection; 
-    model = DEBODE!,
+    model = HydraODE!,
     AgentParamType::DataType = AgentParams,
     kwargs...
     )
