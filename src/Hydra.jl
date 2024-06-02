@@ -38,4 +38,10 @@ module Hydra
     include("Recipes.jl") # plotting
     export lineplot, groupedlineplot, rugplot, gridxlabel, gridylabel
 
+    
+    @compile_workload begin
+        theta = DEBParamCollection()
+        yhat = simulator(theta)
+    end
+
 end # module Hydra
