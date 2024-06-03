@@ -177,7 +177,7 @@ end
 AgentParams are subject to agent variability. 
 This is in contrast to SpeciesParams, which define parameters on the species-level, i.e. the population means.
 """
-@with_kw mutable struct AgentParams <: AbstractParams
+@with_kw mutable struct AgentParams <: AbstractAgentParams
     Z::Float64
     Idot_max_rel::Float64
     Idot_max_rel_emb::Float64
@@ -202,7 +202,7 @@ Induce agent variability in spc parameters via zoom factor `Z`.
 `Z` is sampled from the corresponding distribution given in `p` and assumed to represent a ratio between maximum structurel *masses* (not lengths), 
 so that the surface area-specific ingestion rate `Idot_max_rel` scales with `Z^(1/3)` and parameters which represent masses or energy pools scales with `Z`.
 """
-function agent_variability!(agn::AbstractAgentParams, spc::AbstractSpeciesParams) where {AGN <: AbstractParams, SPC <: AbstractParams}
+function agent_variability!(agn::A, spc::S) where {A <: AbstractAgentParams, S <: AbstractSpeciesParams}
     agn.Z = rand(spc.Z) # sample zoom factor Z for agent from distribution
     agn.Idot_max_rel = spc.Idot_max_rel * agn.Z^(1/3) # Z is always applied to Idot_max_rel
     agn.Idot_max_rel_emb = spc.Idot_max_rel_emb * agn.Z^(1/3) #, including the value for embryos

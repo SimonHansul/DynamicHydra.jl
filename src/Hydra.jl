@@ -11,7 +11,7 @@ module Hydra
     abstract type AbstractParamCollection end # an AbstractParamCollection contain a defined set of multiple AbstractParams instances
     abstract type AbstractSpeciesParams <: AbstractParams end
     abstract type AbstractAgentParams <: AbstractParams end
-    abstract type AbstractGlobalODEParams <: AbstractParams end
+    abstract type AbstractGlobalParams <: AbstractParams end
     abstract type AbstractABM end
     abstract type AbstractAgent end
 

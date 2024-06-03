@@ -65,9 +65,6 @@ end
 For initialization of ODE simulator, initialize the component vector of state variables, `u`, based on common parameters `p`.
 """
 function initialize_statevars(p::AbstractParamCollection)::ComponentArray 
-    return ComponentArray(
-        glb = init_substates_global(p),
-        agn = init_substates_agent(p)
-    )
+    return vcat(init_substates_global(p), init_substates_agent(p)) # return concatenated ComponentArray
 end
 
