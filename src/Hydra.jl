@@ -14,11 +14,13 @@ module Hydra
     abstract type AbstractSpeciesParams <: AbstractParams end
     abstract type AbstractGlobalParams <: AbstractParams end
 
+    export AbstractParams, AbstractParamCollection, AbstractABM, AbstractSpeciesParams
+
     include("DoseResponse.jl") # collection of useful dose-response functions
     export LL2, LL2h, LL2M, LL2inv, LL2hinv, WB2, WB2, LLBP5, LLAS3, LL3, CRS6, CRS4, CRS4U, CRS6U, CRS5US, NEC2pos, NEC2neg
     
     include("Params.jl") # parameter structures
-    export AbstractParams, AbstractParamCollection, childstruct!, AbstractABM, AbstractSpeciesParams, ABM, GlobalParams, GlobalBaseStatevars, SpeciesParams, DEBParamCollection, AgentParams
+    exportchildstruct!, ABM, GlobalParams, GlobalBaseStatevars, SpeciesParams, DEBParamCollection, AgentParams
 
     include("StateVars.jl") # initialization of state variables
     export init_substates_agent, init_substates_global, initialize_statevars, initialize_statevars!, initialize_agents!

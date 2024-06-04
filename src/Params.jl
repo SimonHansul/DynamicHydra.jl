@@ -75,9 +75,11 @@ end
     k_V::Float64 = 0.1 # chemostatic dilution rate [t^-1]
     V_patch::Float64 = 0.05 # volume of a patch (or the entire similated environment) [V]
     C_W::Vector{Float64} = [0.] # external chemical concentrations [m/t], [n/t], ...
+    AgentType::DataType = DEBAgent # type of agent to be simulated - DEB by defaul
     recordagentvars::Bool = true # record agent-level output?
     saveat::Float64 = 1. # when to save output [t]
     odefuncs::Vector{Function} = Function[C_Wdot_const!, X_pdot_chemstat!] # ODE-based global step functions
+    rulefuncs::Vector{Function} = Function[]
 end
 
 

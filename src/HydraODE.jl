@@ -1,39 +1,3 @@
-
-#=
-# Simulator function for ODE-based DEB model
-=#
-
-#@enum ReturnType dataframe odesolution matrix # possible return types
-
-#function abstractsimulator(
-#    p::AbstractParamCollection,
-#    model, 
-#    AgentParamType::DataType;
-#    alg = Tsit5(),
-#    returntype::ReturnType = dataframe,
-#    kwargs...
-#    )::Union{DataFrame,ODESolution}
-#
-#    p.agn = AgentParamType(p.spc) # initialize agent parameters incl. individual variability
-#    
-#    u = initialize_statevars(p)
-#    prob = ODEProblem(model, u, (0, p.glb.t_max), p) # define the problem
-#    sol = solve(prob, alg; kwargs...) # get solution to the IVP
-#
-#    if returntype == dataframe
-#        return sol_to_df(sol) # convert solution to dataframe
-#    end
-#    
-#    if returntype == matrix
-#        return sol_to_mat(sol) # convert solution to matrix
-#    end
-#
-#    if returntype == odesolution
-#        return sol # directly return the ODESolution object
-#    end
-#
-#end
-
 """
     HydraODE!(du, u, p, t)
 Definition of  a Hydra model as a system of ordinary differential equations. 

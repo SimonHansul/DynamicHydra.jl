@@ -66,7 +66,6 @@ Juveniles and adults (X_emb > 0) feed on the external resource X_pcmn.
 
     du.agn.I = du.agn.I_emb + du.agn.I_p
 
-    du.glb.X_p -= du.agn.I_p
     du.agn.X_emb = -du.agn.I_emb
 
     return nothing
@@ -174,38 +173,6 @@ Somatic growth, including application of shrinking equation.
     return nothing
 end
 
-"""
-    S_0dot!(
-        du::ComponentArray,
-        u::ComponentArray,
-        p::AbstractParamCollection,
-        t::Real
-        )::Nothing
-
-Reference structure `S_0`, which is used as a measure of energetic state.
-
-This is the amount of structure an individual of the given age has under ideal conditions, 
-i.e. `f = 1` and `y_z = 1`, with the exception of `y_G`. 
-Values of `y_G != 1` are included in the calculation of `S_0`, so that a slowing down of growth 
-"""
-@inline function S_0dot!(
-    du::ComponentArray,
-    u::ComponentArray,
-    p::AbstractParamCollection,
-    t::Real
-    )::Nothing
-
-    #du.agn.S_0 = p.eta_AS * u.agn.y_G * (Hydra.sig(u.X_emb, 0., p.agn.Idot_max_rel, p.agn.Idot_max_rel_emb; beta = 1e20) * Complex(u.agn.S ^(2/3)).re - p.spc.k_M * u.S_0)
-
-    u.agn.S_0 = sig(
-        u.S,
-        u.S_0,
-        u.S_0,
-        u.S;
-    )
-
-    return nothing
-end
 
 """
 Maturation flux. 
@@ -328,7 +295,7 @@ Currently simply returns zeros because time-variable exposure is not yet impleme
     t::Real
     )::Nothing 
 
-    du.glb.C_W = zeros(length(u.glb.C_W)) # constant exposure : derivative is 0
+    du.C_W = zeros(length(u.C_W)) # constant exposure : derivative is 0
 
     return nothing
 end
@@ -343,7 +310,7 @@ function X_pdot_chemstat!(
     t::Real
     )::Nothing 
 
-    du.glb.X_p = p.glb.Xdot_in - p.glb.k_V * u.glb.X_p
+    du.X_p = p.glb.Xdot_in - p.glb.k_V * u.X_p
 
     return nothing
 end
@@ -358,7 +325,7 @@ function C_Wdot_const!(
     t::Real
     )::Nothing
 
-    du.glb.C_W = zeros(length(u.glb.C_W))
+    du.C_W = zeros(length(u.C_W))
 
     return nothing
 end
@@ -428,6 +395,11 @@ end
 
 """
 Hazard rate under starvation.
+
+``
+h_S = LL2h(u.agn.S / u.agn.S_0, (e_S, -b_S))
+``
+
 """
 @inline function h_S!(
     du::ComponentVector,
@@ -445,6 +417,27 @@ end
 Mautrity-driven metabolic acceleration from birth to maturity threshold `H_j` (metamorphosis). 
 We assume that some baseline parameter `p` has value `p_b` at birth and `p_j` at metamorphosis.
 Between birth and metamorphosis, the current value of `p` is the maturity-weighted mean of `p_b` and `p_j`.
+
+``
+w_b = (H_j - H) / (H_j - H_b) # weight for p_b
+w_j = 1 - w_b # weight for p_j
+p_bj = mean([p_b, p_j], Weights([w_b, w_j])) # p_bj, i.e. value between birth and maturity
+
+p = Hydra.sig( # post-metamorphosis: value stays constant at p_j
+    H,
+    H_j,
+    Hydra.sig( # embryonic: value stays constant at p_b
+        X_emb, 
+        0., 
+        p_bj, 
+        p_b),
+    p_j
+)
+
+return p
+``
+
+
 """
 function Hbj(H::Float64, X_emb::Float64, H_b::Float64, H_j::Float64, p_b::Float64, p_j::Float64)::Float64
     w_b = (H_j - H) / (H_j - H_b) # weight for p_b
@@ -474,6 +467,13 @@ Offspring is created whenever there is enough energy in the reproduction buffer.
 """
 function reproduce_opportunistic!(agent::AbstractAgent, abm::AbstractABM)::Nothing
     
+    try 
+        trunc(agent.u.agn.R / agent.p.agn.X_emb_int)
+    catch
+        println(agent.u.agn.R, agent.p.agn.X_emb_int)
+        error()
+    end
+
     let num_offspring = trunc(agent.u.agn.R / agent.p.agn.X_emb_int) # calculate the number of offspring produced
         for _ in 1:num_offspring # for the given number of offspring agents
             offspring = abm.p.glb.AgentType(abm) # initialize a new agent
