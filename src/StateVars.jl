@@ -71,27 +71,3 @@ function initialize_statevars(p::AbstractParamCollection)::ComponentArray
     )
 end
 
-"""
-    initialize_statevars!(agent::AbstractAgent)
-Initialize agent-level state variables.
-"""
-function initialize_statevars!(agent::AbstractAgent, abm::AbstractABM)::Nothing
-    agent.u = ComponentArray(
-        agn = init_substates_agent(agent.p),
-        glb = init_substates_global(abm.p)
-    )
-    return nothing
-end
-
-"""
-    initialize_statevars!(abm::AbstractABM)
-Initialize ABM-level state variables.
-"""
-function initialize_statevars!(abm::AbstractABM)
-    abm.u = ComponentArray(
-        X_p = Float64(p.glb.Xdot_in), # initial resource abundance equal to influx rate
-        C_W = (p.glb.C_W), # external stressor concentrations
-        N_tot = p.glb.N0
-    )
-end
-

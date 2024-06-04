@@ -7,8 +7,8 @@
 abstract type AbstractParams end
 abstract type AbstractParamCollection end
 
-copy(theta::AbstractParams) = typeof(theta)([getproperty(theta, x) for x in fieldnames(typeof(theta))]...)
-copy(theta::AbstractParamCollection) = typeof(theta)([getproperty(theta, x) for x in fieldnames(typeof(theta))]...)
+#copy(theta::AbstractParams) = typeof(theta)([getproperty(theta, x) for x in fieldnames(typeof(theta))]...)
+#copy(theta::AbstractParamCollection) = typeof(theta)([getproperty(theta, x) for x in fieldnames(typeof(theta))]...)
 
 #=
 ## Constructing child structures
@@ -75,11 +75,9 @@ end
     k_V::Float64 = 0.1 # chemostatic dilution rate [t^-1]
     V_patch::Float64 = 0.05 # volume of a patch (or the entire similated environment) [V]
     C_W::Vector{Float64} = [0.] # external chemical concentrations [m/t], [n/t], ...
-    AgentType::DataType = DEBAgent # the type of agent simulated
     recordagentvars::Bool = true # record agent-level output?
     saveat::Float64 = 1. # when to save output [t]
     odefuncs::Vector{Function} = Function[C_Wdot_const!, X_pdot_chemstat!] # ODE-based global step functions
-    rulefuncs::Vector{Function} = Function[N_tot!] # rule-based global step functions
 end
 
 
@@ -94,8 +92,6 @@ and can optionally propagate to parameters indicated in `propagate_zoom::NamedTu
 """
 @with_kw mutable struct SpeciesParams <: AbstractSpeciesParams
     Z::Distribution = Dirac(1.) # agent variability is accounted for in the zoom factor. this can be set to a Dirac distribution if a zoom factor should be applied without introducing agent variability.
-    Z_male::Float64 = 1. # zoom factor for males
-    sex_ratio::Float64 = 1. # initial sex ratio (females vs males)
     propagate_zoom::@NamedTuple{X_emb_int::Bool, H_p::Bool, K_X::Bool} = (X_emb_int = true, H_p = true, K_X = true) # Parameters to which Z will be propagated. Z is *always* applied to `Idot_max_rel` (with appropriate scaling).
     X_emb_int::Float64 = 19.42 # initial vitellus [m]
     K_X::Float64 = 1. # half-saturation constant for food uptake [m/V]
@@ -109,6 +105,7 @@ and can optionally propagate to parameters indicated in `propagate_zoom::NamedTu
     k_M::Float64 = 0.59 # somatic maintenance rate constant [t^-1]
     k_J::Float64 = 0.504 # maturity maintenance rate constant [t^-1]
     H_p::Float64 = 100. # maturity at puberty [m]
+    
     e_S::Float64 = 0.5 # sensitivity parameter for starvation mortality (median effective S_0) [m]
     b_S::Float64 = 5. # slope parameter for starvation mortality [-]
     
@@ -219,9 +216,9 @@ end
 A `ODEParamCollection` contains global parameters `glb` and spc parameters `spc`. <br>
 Initialize the default parameter collection with `ODEParamCollection()`.
 """
-@with_kw mutable struct ODEParamCollection <: AbstractParamCollection
-    glb::AbstractParams = GlobalODEParams()
-    spc::AbstractParams = SpeciesParams()
+@with_kw mutable struct DEBParamCollection <: AbstractParamCollection
+    glb::AbstractGlobalParams = GlobalParams()
+    spc::AbstractSpeciesParams = SpeciesParams()
     agn::Union{Nothing,AbstractParams} = nothing
 end
 

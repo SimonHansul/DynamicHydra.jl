@@ -47,7 +47,7 @@ Juveniles and adults (X_emb > 0) feed on the external resource X_pcmn.
     )::Nothing
 
     u.agn.f_X = functional_response(du, u, p, t)
-    
+
     du.agn.I_emb = sig( # uptake from vitellus
         u.agn.X_emb, # uptake from vitellus depends on mass of vitellus
         0., # the switch occurs when vitellus is used up 
@@ -300,11 +300,11 @@ function Qdot!(
     # dissipation fluxes for the individual processes
     let Qdot_A, Qdot_S, Qdot_C, Qdot_R
         
-        Qdot_A = du.I * (1 - p.spc.eta_IA)
-        Qdot_S = du.S >= 0 ? du.S * (1 - p.spc.eta_AS) / p.spc.eta_AS : du.S * (p.spc.eta_SA - 1)
-        Qdot_R = du.R * (1 - p.spc.eta_AR) / p.spc.eta_AR
+        Qdot_A = du.agn.I * (1 - p.spc.eta_IA) # dissipation through assimialtion
+        Qdot_S = du.agn.S >= 0 ? du.agn.S * (1 - p.spc.eta_AS) / p.spc.eta_AS : du.S * (p.spc.eta_SA - 1) # dissipation through growth
+        Qdot_R = du.agn.R * (1 - p.spc.eta_AR) / p.spc.eta_AR # dissipation through reproduction
         
-        du.Q =  Qdot_A + Qdot_S + Qdot_C + Qdot_R + du.M + du.J + du.H
+        du.agn.Q =  Qdot_A + Qdot_S + Qdot_R + du.agn.M + du.agn.J + du.agn.H # total dissipation
     end
 
     return nothing
@@ -343,7 +343,7 @@ function X_pdot_chemstat!(
     t::Real
     )::Nothing 
 
-    du.X_p = p.glb.Xdot_in - p.glb.k_V * u.X_p
+    du.glb.X_p = p.glb.Xdot_in - p.glb.k_V * u.glb.X_p
 
     return nothing
 end
@@ -358,7 +358,7 @@ function C_Wdot_const!(
     t::Real
     )::Nothing
 
-    du.C_W = zeros(length(u.C_W))
+    du.glb.C_W = zeros(length(u.glb.C_W))
 
     return nothing
 end
@@ -427,7 +427,7 @@ end
 
 
 """
-Hazard rate under starvation
+Hazard rate under starvation.
 """
 @inline function h_S!(
     du::ComponentVector,
@@ -522,37 +522,5 @@ end
 
 function N_tot!(abm::AbstractABM)::Nothing
     abm.u.N_tot = length(abm.agents)
-    return nothing
-end
-
-"""
-    DEBODE!(du, u, p, t)
-Definition of base model as a system of ordinary differential equations. 
-This model definition is suitable for simulating the life-history of a single organism in conjecture with DifferentialEquations.jl.
-"""
-function HydraODE!(du, u, p, t)::Nothing
-
-    ##### physiological responses
-    #y_z!(du, u, p, t) # response to chemical stressors
-    #h_S!(du, u, p, t) # starvation mortality
-#
-    ##### auxiliary state variables (record cumulative values)
-    #Idot!(du, u, p, t)
-    #Adot!(du, u, p, t) 
-    #Mdot!(du, u, p, t) 
-    #Jdot!(du, u, p, t)
-    #Qdot!(du, u, p, t)
-#
-    ##### major state variables
-    #Sdot!(du, u, p, t) # structure
-    #S_0dot!(du, u, p, t) # reference structure
-    #Hdot!(du, u, p, t) # maturity 
-    #H_bdot!(du, u, p, t) # estimate of maturity at birth
-    #Rdot!(du, u, p, t) # reproduction buffer
-    #X_pdot!(du, u, p, t) # resource abundance
-    #X_embdot!(du, u, p, t) # vitellus
-    #Ddot!(du, u, p, t) # damage
-    #C_Wdot!(du, u, p, t) # external stressor concentration 
-
     return nothing
 end

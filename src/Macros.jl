@@ -1,15 +1,9 @@
-function idcol!(Yhat::AbstractDataFrame, col::Symbol, val)
+function add_idcol(Yhat::AbstractDataFrame, col::Symbol, val)
     Yhat[!,col] .= val
-end
-
-function idcol!(Yhat::Any, col::Symbol, val)
-    for df in Yhat
-        idcol!(df, col, val)
-    end
+    return Yhat
 end
 
 concat_sims(Yhat::Vector{DataFrame}) = vcat(Yhat...)
-concat_sims(Yhat::Vector{Any}) = ([vcat([Yhat[i][j] for i in eachindex(Yhat)]...) for j in eachindex(Yhat[1])]...,)
 
 """
     @replicates(simcall::Expr, nreps::Int64) 
@@ -27,11 +21,11 @@ If yhat is a Vector{Any}, we assume that each element is an iterable of DataFram
 """
 macro replicates(simcall::Expr, nreps::Int64)
     quote
-        yhat = [] #DataFrame()
+        yhat = DataFrame[]
 
         for replicate in 1:$nreps
             yhat_i = $(esc(simcall))
-            idcol!(yhat_i, :replicate, replicate)#yhat_i[!,:replicate] .= replicate
+            yhat_i = add_idcol(yhat_i, :replicate, replicate)#yhat_i[!,:replicate] .= replicate
             push!(yhat, yhat_i)
         end
         yhat = concat_sims(yhat)
