@@ -21,7 +21,7 @@ module Hydra
     export AbstractParams, AbstractParamCollection, childstruct!, AbstractABM, AbstractSpeciesParams, ABM, DEBAgent, GlobalODEParams, GlobalBaseStatevars, SpeciesParams, ODEParamCollection, AgentParams
     
     include("Solvers.jl") # solvers used within DEBABM
-    include("DEBABM.jl") # agent-based simulations
+    include("HydraABM.jl") # agent-based simulations
 
     include("StateVars.jl") # initializeation of state variables
     export init_substates_agent, init_substates_global, initialize_statevars, initialize_statevars!, initialize_agents!
@@ -32,7 +32,7 @@ module Hydra
     include("ModelFunctions.jl") # core model functions (derivatives and rules)
     export sig, clipneg
 
-    include("DEBODE.jl") # ODE-based simulations
+    include("HydraODE.jl") # ODE-based simulations
     export abstractsimulator, returntypes, simulator, @replicates
 
     include("ImpliedTraits.jl") # calculation of traits from parameters
